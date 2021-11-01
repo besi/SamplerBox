@@ -15,10 +15,10 @@
 #########################################
 
 AUDIO_DEVICE_ID = 2                     # change this number to use another soundcard
-SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
+SAMPLES_DIR = "presets/"                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
-USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
+USE_BUTTONS = True                    # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
 
 
@@ -371,19 +371,19 @@ if USE_BUTTONS:
 
     def Buttons():
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(27, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         global preset, lastbuttontime
         while True:
             now = time.time()
-            if not GPIO.input(18) and (now - lastbuttontime) > 0.2:
+            if not GPIO.input(27) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset -= 1
                 if preset < 0:
                     preset = 127
                 LoadSamples()
 
-            elif not GPIO.input(17) and (now - lastbuttontime) > 0.2:
+            elif not GPIO.input(4) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset += 1
                 if preset > 127:
