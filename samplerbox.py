@@ -14,7 +14,7 @@
 # CONFIG
 #########################################
 
-AUDIO_DEVICE_ID = 2                     # change this number to use another soundcard
+AUDIO_DEVICE_ID = 1                     # change this number to use another soundcard
 SAMPLES_DIR = "presets/"                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
@@ -36,7 +36,7 @@ import sounddevice
 import threading
 from chunk import Chunk
 import struct
-import rtmidi_python as rtmidi
+import rtmidi
 import samplerbox_audio
 
 
@@ -321,18 +321,18 @@ def ActuallyLoad():
                 samples[midinote, 127] = Sound(file, midinote, 127)
 
     initial_keys = set(samples.keys())
-    for midinote in xrange(128):
+    for midinote in range(128):
         lastvelocity = None
-        for velocity in xrange(128):
+        for velocity in range(128):
             if (midinote, velocity) not in initial_keys:
                 samples[midinote, velocity] = lastvelocity
             else:
                 if not lastvelocity:
-                    for v in xrange(velocity):
+                    for v in range(velocity):
                         samples[midinote, v] = samples[midinote, velocity]
                 lastvelocity = samples[midinote, velocity]
         if not lastvelocity:
-            for velocity in xrange(128):
+            for velocity in range(128):
                 try:
                     samples[midinote, velocity] = samples[midinote-1, velocity]
                 except:
@@ -471,14 +471,14 @@ LoadSamples()
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn(b'in')]
+midi_in = [rtmidi.MidiIn()]
 previous = []
 while True:
-    for port in midi_in[0].ports:
-        if port not in previous and b'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn(b'in'))
-            midi_in[-1].callback = MidiCallback
-            midi_in[-1].open_port(port)
+    for port in midi_in[0].get_ports():
+        if port not in previous and 'Midi Through' not in port:
+            midi_in.append(rtmidi.MidiIn())
+            midi_in[-1].set_callback(MidiCallback)
+            midi_in[-1].open_port(1)
             print('Opened MIDI: ' + str(port))
-    previous = midi_in[0].ports
+    previous = midi_in[0].get_ports()
     time.sleep(2)
