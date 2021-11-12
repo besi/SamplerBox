@@ -190,11 +190,10 @@ def AudioCallback(outdata, frame_count, time_info, status):
 def MidiCallback(message, time_stamp):
     global playingnotes, sustain, sustainplayingnotes
     global preset
-    messagetype = message[0] >> 4
-    messagechannel = (message[0] & 15) + 1
-    note = message[1] if len(message) > 1 else None
+    messagetype = message[0][0] >> 4
+    note = message[0][1] if len(message[0]) > 1 else None
     midinote = note
-    velocity = message[2] if len(message) > 2 else None
+    velocity = message[0][2] if len(message[0]) > 2 else None
 
     if messagetype == 9 and velocity == 0:
         messagetype = 8
